@@ -27,29 +27,34 @@ export class Board {
     #snake;
     #food;
     #scoreChangeEvent;
+    #controls;
+    #move;
 
     constructor(rows, cols) {
         this.setBoardSize(rows, cols);
-        
-        const SNAKE_SPAWN_POS = { x: randomBetween(1, cols), y: randomBetween(1, rows) };
+        this.#food = new Food();
+    }
+
+    start() {
+        this.#resetBoard();
+        this.#setBoard();
+
+        const SNAKE_SPAWN_POS = { x: randomBetween(1, this.#cols), y: randomBetween(1, this.#rows) };
         
         this.#snake = new Snake(INITIAL_SNAKE_SIZE, SNAKE_SPAWN_POS, this.#prefersDirection(SNAKE_SPAWN_POS));
-        this.#food = new Food();
         this.score = 0;
-        this.running = true;
 
         this.#updateSnakeParts();
         this.#placeFood();
         this.#addControls();
         this.#addMovement();
+
+        this.running = true;
     }
 
     setBoardSize(rows, cols) {
         this.#rows = rows; // Determines the row size of the board
         this.#cols = cols; // Determines the col size of the board
-
-        this.#resetBoard();
-        this.#setBoard();
     }
 
     #isColliding({ x, y }) {
@@ -135,35 +140,40 @@ export class Board {
     }
 
     #addControls() {
-        document.addEventListener('mobileswipe', () => {
-            this.#snake.setDirection(getMobileDirection());
-        })
-        document.addEventListener('keydown', (e) => {
-            const direction = keyCodeToDirection(e.code);
-            if(direction) {
-                e.preventDefault();
-                this.#snake.setDirection(direction);
-            }
-        })
+        if(!this.#controls) {
+            document.addEventListener('mobileswipe', () => {
+                this.#snake.setDirection(getMobileDirection());
+            })
+            document.addEventListener('keydown', (e) => {
+                const direction = keyCodeToDirection(e.code);
+                if(direction) {
+                    e.preventDefault();
+                    this.#snake.setDirection(direction);
+                }
+            })
+            this.#controls = true;
+        }
     }
 
     #addMovement() {
+        if(this.#move) return;
         let currTime;
-        const move = (timestamp) => {
+        this.#move = (timestamp) => {
             if(!currTime) {
                 currTime = timestamp
             }
 
             const elapsed = timestamp - currTime;
+            const speed = Math.max(120, 150 - this.score * 1.5)
 
-            if(elapsed >= 150) {
+            if(elapsed >= speed) {
                 currTime = timestamp;
                 if(this.running) this.#update(); // update board
             }
             
-            requestAnimationFrame(move);
+            requestAnimationFrame(this.#move);
         }
-        requestAnimationFrame(move)
+        requestAnimationFrame(this.#move)
     }
 
     #prefersDirection(position) {
