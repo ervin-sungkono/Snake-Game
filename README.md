@@ -4,7 +4,7 @@ Snake game built using HTML, CSS, and Javascript.
 ## Features
 - Supports mobile gesture
 - Zero dependencies
-- Offline Mode **(WIP)**
+- Offline Mode
 
 ## Preview
 ![image](https://github.com/user-attachments/assets/4bf14ace-33dc-444c-b275-efb7e88a78d2)
