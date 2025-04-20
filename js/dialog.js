@@ -66,7 +66,6 @@ export class Dialog {
     }
 
     async show() {
-        console.log(this.#element);
         if(!this.#element) this.#init();
 
         document.body.appendChild(this.#element);
