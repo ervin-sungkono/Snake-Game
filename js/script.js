@@ -49,7 +49,20 @@ function startGame() {
     board.start();
 }
 
+function registerServiceWorker() {
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+            .register("./sw.js")
+            .then(registration => {
+                console.log("Service Worker registered with scope:", registration.scope);
+            })
+            .catch(error => console.log("Service worker registration failed: ", error));
+    }
+}
+
 function initialize() {
+    registerServiceWorker();
+
     const startDialogConfig = {
         title: 'Welcome to Snake Game!',
         body: `<p>Your job is to collect as many food as you can.</p><p>Red food increases snake size by 1, while the blue ones increases the snake size by 2.</p><p>Good luck!</p><p>Your High Score: ${highScore}</p>`,
